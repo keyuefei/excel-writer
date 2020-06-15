@@ -12,8 +12,7 @@ import java.lang.annotation.*;
 @Documented
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ExcelHeadAnnotation {
-
+public @interface ExcelLeafHeadAnnotation {
 
     /**
      * 唯一标识，索引
@@ -28,8 +27,14 @@ public @interface ExcelHeadAnnotation {
      */
     String text();
     /**
+     *
+     */
+    String key();
+    /**
      * 描述
      */
     String desc() default "";
+
+
 
 }
