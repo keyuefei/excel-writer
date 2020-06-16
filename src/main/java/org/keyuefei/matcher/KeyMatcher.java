@@ -7,6 +7,9 @@ package org.keyuefei.matcher;/**
  */
 
 import org.keyuefei.data.TestData1;
+import org.keyuefei.model.HeadKey;
+
+import java.util.List;
 
 /**
  * @Description key匹配器
@@ -16,5 +19,5 @@ import org.keyuefei.data.TestData1;
  */
 public interface KeyMatcher {
 
-    boolean match(String key, TestData1 t);
+    boolean match(List<HeadKey> headKeys, TestData1 t);
 }

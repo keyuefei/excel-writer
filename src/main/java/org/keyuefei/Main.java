@@ -3,9 +3,6 @@ package org.keyuefei;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -14,24 +11,25 @@ import org.apache.poi.ss.util.RegionUtil;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.keyuefei.annotation.ExcelAnnotation;
 import org.keyuefei.annotation.ExcelHeadAnnotation;
-import org.keyuefei.annotation.ExcelLeafHeadAnnotation;
+import org.keyuefei.annotation.ExcelHeadKey;
+import org.keyuefei.annotation.ExcelHeadKeys;
 import org.keyuefei.condition.ColumnCondition;
 import org.keyuefei.data.TestData1;
 import org.keyuefei.exception.AttributeException;
 import org.keyuefei.exception.GroupFieldException;
 import org.keyuefei.matcher.KeyMatcher;
 import org.keyuefei.model.BoxCubicle;
+import org.keyuefei.model.Excel;
+import org.keyuefei.model.ExcelHead;
+import org.keyuefei.model.HeadKey;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.security.Key;
 import java.util.*;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -119,7 +117,7 @@ public class Main {
 
     private static void parseExcelContent(Excel excel, List<TestData1> data, String[] groupProperties) {
         KeyMatcher keyMatcher = excel.getKeyMatcher();
-        List<ExcelHead> leaves = excel.getLevel2ExcelHeadsMap().get(excel.getTotalRows() - 1);
+        List<ExcelHead> leaves = excel.getLevel2ExcelHeadsMap().get(excel.getHorizontalHeadTotalRows() - 1);
 
         //按照指定顺序分组
         Map<Integer, List<ExcelHead>> levelExcelHeads = new HashMap<>();
@@ -135,20 +133,22 @@ public class Main {
         excel.setTotalRows(excel.getVerticalHeadTotalRows() + excel.getHorizontalHeadTotalRows());
         excel.setTotalColumns(excel.getVerticalHeadTotalColumns() + excel.getHorizontalHeadTotalColumns());
 
+        int[][] content = new int[excel.getVerticalHeadTotalRows()][excel.getHorizontalHeadTotalColumns()];
+        for (int i = 0; i < leafExcelHeads.size(); i++) {
+            ExcelHead leafExcelHead = leafExcelHeads.get(i);
 
-        for (ExcelHead leafExcelHead : leafExcelHeads) {
             List<TestData1> rowGroupData = leafExcelHead.getRowGroupData();
             for (TestData1 rgd : rowGroupData) {
-                for (ExcelHead leaf : leaves) {
-                    if (keyMatcher.match(leaf.getKey(), rgd)) {
-
-
+                for (int j = 0; j < leaves.size(); j++) {
+                    ExcelHead leaf = leaves.get(j);
+                    if (keyMatcher.match(leaf.getHeadKeys(), rgd)) {
+                        content[i][j]++;
+                        break;
                     }
                 }
             }
         }
-
-
+        excel.setContent(content);
     }
 
 
@@ -221,21 +221,28 @@ public class Main {
                 .map(field -> {
                     String text = null;
                     int index = 0, parentIndex = 0;
-                    ExcelLeafHeadAnnotation excelLeafHeadAnnotation = field.getAnnotation(ExcelLeafHeadAnnotation.class);
                     ExcelHeadAnnotation excelHeadAnnotation = field.getAnnotation(ExcelHeadAnnotation.class);
-                    if (excelLeafHeadAnnotation != null) {
-                        text = excelLeafHeadAnnotation.text();
-                        index = excelLeafHeadAnnotation.index();
-                        parentIndex = excelLeafHeadAnnotation.parentIndex();
-                    } else if (excelHeadAnnotation != null) {
+                    if (excelHeadAnnotation != null) {
                         text = excelHeadAnnotation.text();
                         index = excelHeadAnnotation.index();
                         parentIndex = excelHeadAnnotation.parentIndex();
+                        if (index == parentIndex) {
+                            throw new AttributeException("【属性异常】" + excelHeadAnnotation + "中index与parentIndex相同");
+                        }
                     } else {
                         throw new RuntimeException("没有必须注解！");
                     }
+
                     ExcelHead excelHead = new ExcelHead(text, index, parentIndex, 0, 0,
                             null, null, null, false, null);
+
+                    ExcelHeadKey[] excelHeadKeys = field.getAnnotationsByType(ExcelHeadKey.class);
+                    if (excelHeadKeys != null && excelHeadKeys.length != 0) {
+                        List<HeadKey> headKeys = Arrays.stream(excelHeadKeys)
+                                .map(excelHeadKey -> new HeadKey(excelHeadKey.key(), excelHeadKey.value())).collect(Collectors.toList());
+                        excelHead.setHeadKeys(headKeys);
+                    }
+
                     return excelHead;
                 }).collect(Collectors.toList());
         //index2ExcelHeadMap: key = index, value = excelHead
@@ -247,7 +254,7 @@ public class Main {
 //        inject parentHead property
         excelHeads.stream()
                 .forEach(excelHead -> {
-                    ExcelHead parentExcelHead = index2ExcelHeadMap.get(excelHead.parentIndex);
+                    ExcelHead parentExcelHead = index2ExcelHeadMap.get(excelHead.getParentIndex());
                     if (parentExcelHead == null) {
                         return;
                     }
@@ -301,112 +308,6 @@ public class Main {
             excelHead = excelHead.getParentHead();
         }
         return level;
-    }
-
-
-    @Data
-    static class ExcelHead {
-        private String text;
-        private int index;
-        private int parentIndex;
-
-        //合并列
-        private int colSpan;
-        //合并行
-        private int rowSpan;
-
-        //父表头
-        private ExcelHead parentHead;
-        //子表头
-        private List<ExcelHead> childHeads;
-
-        //横向分组 数据； 横向表头有值
-        private List<TestData1> rowGroupData;
-
-        /**
-         * 水平叶子节点
-         */
-        private boolean isHorizontalLeaf;
-        /**
-         * key， 水平叶子节点才有该属性
-         */
-        private String key;
-
-        public ExcelHead(String text, int index, int parentIndex, int colSpan, int rowSpan,
-                         ExcelHead parentHead, List<ExcelHead> childHeads, List<TestData1> rowGroupData,
-                         boolean isHorizontalLeaf, String key) {
-            this.text = text;
-            this.index = index;
-            this.parentIndex = parentIndex;
-            this.colSpan = colSpan;
-            this.rowSpan = rowSpan;
-            this.parentHead = parentHead;
-            this.childHeads = childHeads;
-            this.rowGroupData = rowGroupData;
-            this.isHorizontalLeaf = isHorizontalLeaf;
-            this.key = key;
-        }
-
-        @Override
-        public String toString() {
-            return "ExcelHead{" +
-                    "text='" + text + '\'' +
-                    ", index=" + index +
-                    ", parentIndex=" + parentIndex +
-                    ", colSpan=" + colSpan +
-                    ", rowSpan=" + rowSpan +
-                    ", parentHead=" + parentHead +
-                    '}';
-        }
-    }
-
-    @Data
-    static class Excel {
-        private List<ExcelHead> excelHeads;
-        private Map<Integer, List<ExcelHead>> level2ExcelHeadsMap;
-        private String sheetName;
-        //水平表头总行数
-        private int horizontalHeadTotalRows;
-        //水平表头总列数
-        private int horizontalHeadTotalColumns;
-        //垂直表头总行数
-        private int verticalHeadTotalRows;
-        //垂直表头总列数
-        private int verticalHeadTotalColumns;
-        //总行数
-        private int totalRows;
-        //总列数
-        private int totalColumns;
-
-        //行偏移
-        private int rowOffset;
-        //列偏移
-        private int columnOffset;
-
-        private List<ColumnCondition> columnConditions;
-        private KeyMatcher keyMatcher;
-
-
-        public Excel(List<ExcelHead> excelHeads, Map<Integer, List<ExcelHead>> level2ExcelHeadsMap, String sheetName,
-                     int horizontalHeadTotalRows, int horizontalHeadTotalColumns,
-                     int verticalHeadTotalRows, int verticalHeadTotalColumns,
-                     int totalRows, int totalColumns,
-                     int rowOffset, int columnOffset,
-                     List<ColumnCondition> columnConditions, KeyMatcher keyMatcher) {
-            this.excelHeads = excelHeads;
-            this.level2ExcelHeadsMap = level2ExcelHeadsMap;
-            this.sheetName = sheetName;
-            this.horizontalHeadTotalRows = horizontalHeadTotalRows;
-            this.horizontalHeadTotalColumns = horizontalHeadTotalColumns;
-            this.verticalHeadTotalRows = verticalHeadTotalRows;
-            this.verticalHeadTotalColumns = verticalHeadTotalColumns;
-            this.totalRows = totalRows;
-            this.totalColumns = totalColumns;
-            this.rowOffset = rowOffset;
-            this.columnOffset = columnOffset;
-            this.columnConditions = columnConditions;
-            this.keyMatcher = keyMatcher;
-        }
     }
 
 

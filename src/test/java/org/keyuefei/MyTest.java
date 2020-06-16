@@ -3,6 +3,7 @@ package org.keyuefei;
 import org.junit.Test;
 import org.keyuefei.data.TestData1;
 import org.keyuefei.exception.GroupFieldException;
+import org.keyuefei.model.ExcelHead;
 
 import java.util.HashMap;
 import java.util.List;
@@ -22,7 +23,7 @@ public class MyTest {
         //1. 构造假数据
         List<TestData1> data = TestData1.buildFakeData();
         //2.
-        Map<Integer, List<Main.ExcelHead>> levelExcelHeads = new HashMap<>();
+        Map<Integer, List<ExcelHead>> levelExcelHeads = new HashMap<>();
         Main.group(levelExcelHeads, data, new String[]{""}, 0);
         System.out.println(levelExcelHeads);
     }
@@ -32,7 +33,7 @@ public class MyTest {
         //1. 构造假数据
         List<TestData1> data = TestData1.buildFakeData();
         //2.
-        Map<Integer, List<Main.ExcelHead>> levelExcelHeads = new HashMap<>();
+        Map<Integer, List<ExcelHead>> levelExcelHeads = new HashMap<>();
         Main.group(levelExcelHeads, data, new String[]{}, 0);
         System.out.println(levelExcelHeads);
     }
@@ -43,7 +44,7 @@ public class MyTest {
         //1. 构造假数据
         List<TestData1> data = TestData1.buildFakeData();
         //2.
-        Map<Integer, List<Main.ExcelHead>> levelExcelHeads = new HashMap<>();
+        Map<Integer, List<ExcelHead>> levelExcelHeads = new HashMap<>();
         Main.group(levelExcelHeads, data, new String[]{"region","boxCityName", "supplierName"}, 0);
         System.out.println(levelExcelHeads);
     }

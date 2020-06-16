@@ -3,7 +3,8 @@ package org.keyuefei.model;
 
 import org.keyuefei.annotation.ExcelAnnotation;
 import org.keyuefei.annotation.ExcelHeadAnnotation;
-import org.keyuefei.annotation.ExcelLeafHeadAnnotation;
+import org.keyuefei.annotation.ExcelHeadKey;
+import org.keyuefei.annotation.ExcelHeadKeys;
 import org.keyuefei.condition.ColumnSumZeroCondition;
 import org.keyuefei.matcher.DefaultKeyMatcher;
 
@@ -19,7 +20,7 @@ import org.keyuefei.matcher.DefaultKeyMatcher;
 public class BoxCubicle {
 
 
-    @ExcelHeadAnnotation(text = "智能柜I", index = -1, parentIndex = -1)
+    @ExcelHeadAnnotation(text = "智能柜I", index = 0, parentIndex = -1)
     private String expressBox;
 
     @ExcelHeadAnnotation(text = "室内", desc = "智能柜I室内",
@@ -50,29 +51,57 @@ public class BoxCubicle {
     /**
      * 叶子表头必须含有属性 key
      */
-    @ExcelLeafHeadAnnotation(index = 7, parentIndex = 3, key = "expressBoxInDoorMainNoFigure", text = "无花纹", desc = "智能柜I室内主柜无花纹")
+    @ExcelHeadAnnotation(index = 7, parentIndex = 3, text = "无花纹", desc = "智能柜I室内主柜无花纹")
+    @ExcelHeadKey(key = "cubicleType", value = "expressMainBox")
+    @ExcelHeadKey(key = "roomRelation", value = "1")
+    @ExcelHeadKey(key = "figureCode", value = "0")
     private String expressBoxInDoorMainNoFigure;
 
-    @ExcelLeafHeadAnnotation(index = 8, parentIndex = 4, key = "expressBoxInDoorSubLogoFigure", text = "logo花纹", desc = "智能柜I室内副柜logo花纹")
+
+    @ExcelHeadAnnotation(index = 8, parentIndex = 4, text = "logo花纹", desc = "智能柜I室内副柜logo花纹")
+    @ExcelHeadKeys(value = {
+            @ExcelHeadKey(key = "cubicleType", value = "expressSubBox"),
+            @ExcelHeadKey(key = "roomRelation", value = "1"),
+            @ExcelHeadKey(key = "figureCode", value = "3"),
+    })
     private String expressBoxInDoorSubLogoFigure;
 
-    @ExcelLeafHeadAnnotation(index = 9, parentIndex = 4, key = "expressBoxInDoorSubLeftFigure", text = "左上角印花纹", desc = "智能柜I室内副柜左上角印花纹")
+    @ExcelHeadAnnotation(index = 9, parentIndex = 4, text = "左上角印花纹", desc = "智能柜I室内副柜左上角印花纹")
+    @ExcelHeadKey(key = "cubicleType", value = "expressSubBox")
+    @ExcelHeadKey(key = "roomRelation", value = "1")
+    @ExcelHeadKey(key = "figureCode", value = "1")
     private String expressBoxInDoorSubLeftFigure;
 
-    @ExcelLeafHeadAnnotation(index = 10, parentIndex = 4, key = "expressBoxInDoorSubRightFigure", text = "右下角印花纹", desc = "智能柜I室内副柜右下角印花纹")
+    @ExcelHeadAnnotation(index = 10, parentIndex = 4, text = "右下角印花纹", desc = "智能柜I室内副柜右下角印花纹")
+    @ExcelHeadKey(key = "cubicleType", value = "expressSubBox")
+    @ExcelHeadKey(key = "roomRelation", value = "1")
+    @ExcelHeadKey(key = "figureCode", value = "2")
     private String expressBoxInDoorSubRightFigure;
 
-    @ExcelLeafHeadAnnotation(index = 11, parentIndex = 5, key = "expressBoxOutDoorMainNoFigure", text = "无花纹", desc = "智能柜I室外主柜无花纹")
+    @ExcelHeadAnnotation(index = 11, parentIndex = 5, text = "无花纹", desc = "智能柜I室外主柜无花纹")
+    @ExcelHeadKey(key = "cubicleType", value = "expressSubBox")
+    @ExcelHeadKey(key = "roomRelation", value = "2")
+    @ExcelHeadKey(key = "figureCode", value = "0")
     private String expressBoxOutDoorMainNoFigure;
 
-    @ExcelLeafHeadAnnotation(index = 12, parentIndex = 6, key = "expressBoxOutDoorSubLogoFigure", text = "logo花纹", desc = "智能柜I室外副柜logo花纹")
+
+    @ExcelHeadAnnotation(index = 12, parentIndex = 6, text = "logo花纹", desc = "智能柜I室外副柜logo花纹")
+    @ExcelHeadKey(key = "cubicleType", value = "expressSubBox")
+    @ExcelHeadKey(key = "roomRelation", value = "2")
+    @ExcelHeadKey(key = "figureCode", value = "3")
     private String expressBoxOutDoorSubLogoFigure;
 
-    @ExcelLeafHeadAnnotation(index = 13, parentIndex = 6, key = "expressBoxOutDoorSubLeftFigure", text = "左上角印花纹", desc = "智能柜I室外副柜左上角印花纹")
+    @ExcelHeadAnnotation(index = 13, parentIndex = 6, text = "左上角印花纹", desc = "智能柜I室外副柜左上角印花纹")
+    @ExcelHeadKey(key = "cubicleType", value = "expressSubBox")
+    @ExcelHeadKey(key = "roomRelation", value = "2")
+    @ExcelHeadKey(key = "figureCode", value = "1")
     private String expressBoxOutDoorSubLeftFigure;
 
-    @ExcelLeafHeadAnnotation(index = 14, parentIndex = 6, key = "expressBoxOutDoorSubRightFigure", text = "右下角印花纹", desc = "智能柜I室外副柜右下角印花纹")
-    private String expressBoxOutDoorSubRightFigure;
 
+    @ExcelHeadAnnotation(index = 14, parentIndex = 6, text = "右下角印花纹", desc = "智能柜I室外副柜右下角印花纹")
+    @ExcelHeadKey(key = "cubicleType", value = "expressSubBox")
+    @ExcelHeadKey(key = "roomRelation", value = "2")
+    @ExcelHeadKey(key = "figureCode", value = "2")
+    private String expressBoxOutDoorSubRightFigure;
 
 }

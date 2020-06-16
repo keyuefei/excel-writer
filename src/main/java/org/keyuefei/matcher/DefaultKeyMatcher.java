@@ -1,12 +1,10 @@
-package org.keyuefei.matcher;/**
- * @Classname KeyMatcher
- * @Description TODO
- * @Date 2020/6/15 10:31
- * @Created by keyuefei
- * @author KeyMatcher 1063847690@qq.com
- */
+package org.keyuefei.matcher;
 
 import org.keyuefei.data.TestData1;
+import org.keyuefei.model.HeadKey;
+
+import java.lang.reflect.Field;
+import java.util.List;
 
 /**
  * @Description key匹配器
@@ -14,14 +12,29 @@ import org.keyuefei.data.TestData1;
  * @DATE 2020/6/15
  * @TIME 10:31
  */
-public class DefaultKeyMatcher implements KeyMatcher{
+public class DefaultKeyMatcher implements KeyMatcher {
 
 
     @Override
-    public boolean match(String key, TestData1 t) {
-        if(key.equals(t.getBoxCityName())){
-            return true;
+    public boolean match(List<HeadKey> headKeys, TestData1 t) {
+
+        for (HeadKey headKey : headKeys) {
+            String key = headKey.getKey();
+            Object value = headKey.getValue();
+            try {
+                Field field = t.getClass().getDeclaredField(key);
+                field.setAccessible(true);
+                Object o = field.get(t);
+                if(!value.equals(o)){
+                    return false;
+                }
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                e.printStackTrace();
+                return false;
+            }
+
+
         }
-        return false;
+        return true;
     }
 }
