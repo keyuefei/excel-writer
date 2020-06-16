@@ -13,6 +13,9 @@ public class ExcelHead {
     private int index;
     private int parentIndex;
 
+    private int row;
+    private int col;
+
     //合并列
     private int colSpan;
     //合并行
@@ -33,11 +36,14 @@ public class ExcelHead {
     /**
      * key， 水平叶子节点才有该属性
      */
-    private List<HeadKey> headKeys;
+    private List<ExcelHeadKey> headKeys;
+
+    private ExcelHeadGroup excelHeadGroup;
+
 
     public ExcelHead(String text, int index, int parentIndex, int colSpan, int rowSpan,
                      ExcelHead parentHead, List<ExcelHead> childHeads, List<TestData1> rowGroupData,
-                     boolean isHorizontalLeaf, List<HeadKey> headKeys) {
+                     boolean isHorizontalLeaf, List<ExcelHeadKey> headKeys) {
         this.text = text;
         this.index = index;
         this.parentIndex = parentIndex;

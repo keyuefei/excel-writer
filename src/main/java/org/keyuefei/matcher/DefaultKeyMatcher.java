@@ -1,7 +1,7 @@
 package org.keyuefei.matcher;
 
 import org.keyuefei.data.TestData1;
-import org.keyuefei.model.HeadKey;
+import org.keyuefei.model.ExcelHeadKey;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -16,9 +16,9 @@ public class DefaultKeyMatcher implements KeyMatcher {
 
 
     @Override
-    public boolean match(List<HeadKey> headKeys, TestData1 t) {
+    public boolean match(List<ExcelHeadKey> headKeys, TestData1 t) {
 
-        for (HeadKey headKey : headKeys) {
+        for (ExcelHeadKey headKey : headKeys) {
             String key = headKey.getKey();
             Object value = headKey.getValue();
             try {

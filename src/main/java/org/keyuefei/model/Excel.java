@@ -4,6 +4,7 @@ import lombok.Data;
 import org.keyuefei.condition.ColumnCondition;
 import org.keyuefei.matcher.KeyMatcher;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -29,6 +30,15 @@ public class Excel {
     private int rowOffset;
     //列偏移
     private int columnOffset;
+    /**
+     * 分组的列数
+     */
+    private int groupColumns;
+    /**
+     * 分组
+     */
+    private List<ExcelHeadGroup> excelHeadGroups;
+
 
     private List<ColumnCondition> columnConditions;
     private KeyMatcher keyMatcher;
@@ -55,5 +65,8 @@ public class Excel {
         this.columnOffset = columnOffset;
         this.columnConditions = columnConditions;
         this.keyMatcher = keyMatcher;
+    }
+
+    public Excel() {
     }
 }

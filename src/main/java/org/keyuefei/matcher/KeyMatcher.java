@@ -7,7 +7,7 @@ package org.keyuefei.matcher;/**
  */
 
 import org.keyuefei.data.TestData1;
-import org.keyuefei.model.HeadKey;
+import org.keyuefei.model.ExcelHeadKey;
 
 import java.util.List;
 
@@ -19,5 +19,5 @@ import java.util.List;
  */
 public interface KeyMatcher {
 
-    boolean match(List<HeadKey> headKeys, TestData1 t);
+    boolean match(List<ExcelHeadKey> headKeys, TestData1 t);
 }

@@ -12,8 +12,8 @@ import java.lang.annotation.*;
 @Documented
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-@Repeatable(value = ExcelHeadKeys.class)
-public @interface ExcelHeadKey {
+@Repeatable(value = ExcelHeadKeysAnnotation.class)
+public @interface ExcelHeadKeyAnnotation {
 
     String key() default "";
 

@@ -1,27 +1,18 @@
 package org.keyuefei;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.RegionUtil;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.keyuefei.annotation.ExcelAnnotation;
-import org.keyuefei.annotation.ExcelHeadAnnotation;
-import org.keyuefei.annotation.ExcelHeadKey;
-import org.keyuefei.annotation.ExcelHeadKeys;
+import org.keyuefei.annotation.*;
 import org.keyuefei.condition.ColumnCondition;
 import org.keyuefei.data.TestData1;
 import org.keyuefei.exception.AttributeException;
 import org.keyuefei.exception.GroupFieldException;
 import org.keyuefei.matcher.KeyMatcher;
-import org.keyuefei.model.BoxCubicle;
-import org.keyuefei.model.Excel;
-import org.keyuefei.model.ExcelHead;
-import org.keyuefei.model.HeadKey;
+import org.keyuefei.model.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -50,8 +41,7 @@ public class Main {
         //3. 构造假数据
         List<TestData1> data = TestData1.buildFakeData();
         //4. 生成excel的content
-        parseExcelContent(excel, data, new String[]{"region", "boxCityName", "supplierName"});
-
+        parseExcelContent(excel, data);
         //2. 获取excel的二进制
         byte[] bytes = generateExcel(excel);
 
@@ -80,17 +70,17 @@ public class Main {
 
 
     public static int group(Map<Integer, List<ExcelHead>> levelExcelHeads,
-                            List<TestData1> data, String[] groupProperties, int level) throws GroupFieldException {
-        if (level > groupProperties.length - 1) {
+                            List<TestData1> data, List<ExcelHeadGroup> excelHeadGroups, int level) throws GroupFieldException {
+        if (level > excelHeadGroups.size() - 1) {
             return 1;
         }
-        String groupProperty = groupProperties[level];
+        ExcelHeadGroup excelHeadGroup = excelHeadGroups.get(level);
         Field field;
         try {
-            field = TestData1.class.getDeclaredField(groupProperty);
+            field = TestData1.class.getDeclaredField(excelHeadGroup.getKey());
             field.setAccessible(true);
         } catch (NoSuchFieldException e) {
-            throw new GroupFieldException("【分组属性】没有属性：" + groupProperty, e);
+            throw new GroupFieldException("【分组属性】没有属性：" + excelHeadGroup.getKey(), e);
         }
         Map<Object, List<TestData1>> groupData = group(data, field);
 
@@ -107,7 +97,7 @@ public class Main {
             levelExcelHeads.get(level).add(excelHead);
 
             excelHead.setText((String) key);
-            int rowSpan = group(levelExcelHeads, groupData1, groupProperties, level + 1);
+            int rowSpan = group(levelExcelHeads, groupData1, excelHeadGroups, level + 1);
             excelHead.setRowSpan(rowSpan);
 
             totalRowSpan += rowSpan;
@@ -115,13 +105,14 @@ public class Main {
         return totalRowSpan;
     }
 
-    private static void parseExcelContent(Excel excel, List<TestData1> data, String[] groupProperties) {
+    private static void parseExcelContent(Excel excel, List<TestData1> data) {
         KeyMatcher keyMatcher = excel.getKeyMatcher();
         List<ExcelHead> leaves = excel.getLevel2ExcelHeadsMap().get(excel.getHorizontalHeadTotalRows() - 1);
 
+
         //按照指定顺序分组
         Map<Integer, List<ExcelHead>> levelExcelHeads = new HashMap<>();
-        group(levelExcelHeads, data, groupProperties, 0);
+        group(levelExcelHeads, data, excel.getExcelHeadGroups(), 0);
 
         int verticalHeadTotalColumns = levelExcelHeads.size();
         List<ExcelHead> leafExcelHeads = levelExcelHeads.get(verticalHeadTotalColumns - 1);
@@ -157,34 +148,34 @@ public class Main {
         Sheet sheet = workbook.createSheet(excel.getSheetName());
         Map<Integer, List<ExcelHead>> level2ExcelHeadsMap = excel.getLevel2ExcelHeadsMap();
 
-        int totalRows = excel.getTotalRows();
+        int horizontalHeadTotalRows = excel.getHorizontalHeadTotalRows();
 
-        for (int i = excel.getRowOffset(); i < totalRows; i++) {
+        for (int i = excel.getRowOffset(); i < horizontalHeadTotalRows; i++) {
             Row row = sheet.createRow(i);
             List<ExcelHead> excelHeads = level2ExcelHeadsMap.get(i);
-            int levelColumnStartIndex = excel.getColumnOffset();
             for (ExcelHead excelHead : excelHeads) {
-                Cell cell = row.createCell(levelColumnStartIndex);
-                cell.setCellValue(excelHead.getText());
                 if (excelHead.getColSpan() == 0) {
                     continue;
                 }
 
-                int levelColumnEndIndex = levelColumnStartIndex + excelHead.getColSpan() - 1;
+                Cell cell = row.createCell(excelHead.getCol());
+                cell.setCellValue(excelHead.getText());
 
-                CellRangeAddress cellRangeAddress = new CellRangeAddress(i, i,
-                        levelColumnStartIndex, levelColumnEndIndex);
-                sheet.addMergedRegion(cellRangeAddress);
-                // 下边框
-                RegionUtil.setBorderBottom(1, cellRangeAddress, sheet, workbook);
-                // 左边框
-                RegionUtil.setBorderLeft(1, cellRangeAddress, sheet, workbook);
-                // 右边框
-                RegionUtil.setBorderRight(1, cellRangeAddress, sheet, workbook);
-
-                levelColumnStartIndex = levelColumnEndIndex + 1;
+                if (excelHead.getColSpan() > 1 || excelHead.getRowSpan() > 1) {
+                    CellRangeAddress cellRangeAddress = new CellRangeAddress(excelHead.getRow(), excelHead.getRow() + excelHead.getRowSpan() - 1,
+                            excelHead.getCol(), excelHead.getCol() + excelHead.getColSpan() - 1);
+                    sheet.addMergedRegion(cellRangeAddress);
+                    // 下边框
+                    RegionUtil.setBorderBottom(1, cellRangeAddress, sheet, workbook);
+                    // 左边框
+                    RegionUtil.setBorderLeft(1, cellRangeAddress, sheet, workbook);
+                    // 右边框
+                    RegionUtil.setBorderRight(1, cellRangeAddress, sheet, workbook);
+                }
             }
         }
+
+
         try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
             workbook.write(bos);
             return bos.toByteArray();
@@ -198,8 +189,10 @@ public class Main {
 
     private static Excel parseExcel(Class<BoxCubicle> clz) throws RuntimeException, IllegalAccessException, InstantiationException {
         ExcelAnnotation excelAnnotation = clz.getAnnotation(ExcelAnnotation.class);
+        Excel excel = new Excel();
+
         if (excelAnnotation == null) {
-            return null;
+            return excel;
         }
         String sheetName = excelAnnotation.sheetName();
 
@@ -212,7 +205,6 @@ public class Main {
             ColumnCondition columnCondition = invalidColumnCondition.newInstance();
             columnConditions.add(columnCondition);
         }
-
 
         Field[] fields = clz.getDeclaredFields();
         //package excelHeads todo: check ExcelHeadAnnotation 一些属性； warn
@@ -236,10 +228,20 @@ public class Main {
                     ExcelHead excelHead = new ExcelHead(text, index, parentIndex, 0, 0,
                             null, null, null, false, null);
 
-                    ExcelHeadKey[] excelHeadKeys = field.getAnnotationsByType(ExcelHeadKey.class);
+                    ExcelHeadGroupAnnotation excelHeadGroupAnnotation = field.getAnnotation(ExcelHeadGroupAnnotation.class);
+
+                    if (excelHeadGroupAnnotation != null) {
+                        ExcelHeadGroup excelHeadGroup = new ExcelHeadGroup(excelHeadGroupAnnotation.key());
+                        excelHead.setExcelHeadGroup(excelHeadGroup);
+                        excel.setGroupColumns(excel.getGroupColumns() + 1);
+                    }
+                    excelHead.setRowSpan(1);
+                    excelHead.setColSpan(1);
+
+                    ExcelHeadKeyAnnotation[] excelHeadKeys = field.getAnnotationsByType(ExcelHeadKeyAnnotation.class);
                     if (excelHeadKeys != null && excelHeadKeys.length != 0) {
-                        List<HeadKey> headKeys = Arrays.stream(excelHeadKeys)
-                                .map(excelHeadKey -> new HeadKey(excelHeadKey.key(), excelHeadKey.value())).collect(Collectors.toList());
+                        List<ExcelHeadKey> headKeys = Arrays.stream(excelHeadKeys)
+                                .map(excelHeadKey -> new ExcelHeadKey(excelHeadKey.key(), excelHeadKey.value())).collect(Collectors.toList());
                         excelHead.setHeadKeys(headKeys);
                     }
 
@@ -252,7 +254,7 @@ public class Main {
                             throw new AttributeException("【index必须唯一】" + newValue + "与" + oldValue + "的index属性重复");
                         }));
 //        inject parentHead property
-        excelHeads.stream()
+        excelHeads.stream().sorted(Comparator.comparing(ExcelHead::getIndex))
                 .forEach(excelHead -> {
                     ExcelHead parentExcelHead = index2ExcelHeadMap.get(excelHead.getParentIndex());
                     if (parentExcelHead == null) {
@@ -278,27 +280,54 @@ public class Main {
         }
         //head total columns, rows(level)
         int horizontalHeadTotalRows = level2ExcelHeadsMap.size();
+        List<ExcelHeadGroup> excelHeadGroups = new ArrayList<>();
         int horizontalHeadTotalColumns = 0;
         for (int i = horizontalHeadTotalRows - 1; i >= 0; i--) {
             List<ExcelHead> levelExcelHeads = level2ExcelHeadsMap.get(i);
             boolean isLeaves = i == horizontalHeadTotalRows - 1;
             if (isLeaves) {
-//                leaf colSpan
-                levelExcelHeads.forEach(excelHead -> {
-                    excelHead.setColSpan(1);
-                });
                 horizontalHeadTotalColumns = levelExcelHeads.size();
+                for (int j = 0; j < levelExcelHeads.size(); j++) {
+                    ExcelHead excelHead = levelExcelHeads.get(j);
+                    excelHead.setRow(i);
+                    excelHead.setCol(excel.getGroupColumns() + j);
+                    excelHead.setRowSpan(1);
+                    excelHead.setColSpan(1);
+                }
             } else {
-                levelExcelHeads.forEach(excelHead -> {
+                int columnOffset = 0;
+                for (int j = 0; j < levelExcelHeads.size(); j++) {
+                    ExcelHead excelHead = levelExcelHeads.get(j);
                     List<ExcelHead> childHeads = excelHead.getChildHeads();
-                    int colSpan = childHeads.stream().mapToInt(ExcelHead::getColSpan).sum();
-                    excelHead.setColSpan(colSpan);
-                });
+                    if (childHeads != null) {
+                        int colSpan = childHeads.stream().mapToInt(ExcelHead::getColSpan).sum();
+                        excelHead.setColSpan(colSpan);
+                        excelHead.setRowSpan(1);
+                        excelHead.setRow(i);
+                        excelHead.setCol(excel.getGroupColumns() + columnOffset);
+                        columnOffset += colSpan;
+                    }
+                    if (excelHead.getExcelHeadGroup() != null) {
+                        excelHeadGroups.add(excelHead.getExcelHeadGroup());
+                        excelHead.setRowSpan(horizontalHeadTotalRows);
+                        excelHead.setColSpan(1);
+                        excelHead.setRow(i);
+                        excelHead.setCol(j);
+                    }
+                }
             }
         }
-        return new Excel(excelHeads, level2ExcelHeadsMap, sheetName, horizontalHeadTotalRows, horizontalHeadTotalColumns,
-                0, 0, 0, 0, excelAnnotation.rowOffset(), excelAnnotation.columnOffset(),
-                columnConditions, keyMatcher);
+        excel.setExcelHeadGroups(excelHeadGroups);
+        excel.setExcelHeads(excelHeads);
+        excel.setLevel2ExcelHeadsMap(level2ExcelHeadsMap);
+        excel.setSheetName(sheetName);
+        excel.setHorizontalHeadTotalRows(horizontalHeadTotalRows);
+        excel.setHorizontalHeadTotalColumns(horizontalHeadTotalColumns);
+        excel.setRowOffset(excelAnnotation.rowOffset());
+        excel.setColumnOffset(excelAnnotation.columnOffset());
+        excel.setColumnConditions(columnConditions);
+        excel.setKeyMatcher(keyMatcher);
+        return excel;
     }
 
     private static int level(ExcelHead excelHead) {

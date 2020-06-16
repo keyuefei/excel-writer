@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class HeadKey {
+public class ExcelHeadKey {
     private String key;
     private String value;
 }

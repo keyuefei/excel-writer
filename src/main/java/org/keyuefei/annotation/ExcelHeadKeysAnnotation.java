@@ -12,7 +12,7 @@ import java.lang.annotation.*;
 @Documented
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ExcelHeadKeys {
+public @interface ExcelHeadKeysAnnotation {
 
-    ExcelHeadKey[] value();
+    ExcelHeadKeyAnnotation[] value();
 }
