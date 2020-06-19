@@ -5,6 +5,7 @@ import org.keyuefei.model.ExcelHeadKey;
 
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * @Description key匹配器
@@ -14,9 +15,17 @@ import java.util.List;
  */
 public class DefaultKeyMatcher implements KeyMatcher {
 
+    private static Logger logger = Logger.getLogger(TestData1.class.getName());
+
+    /**
+     * 总匹配数
+     */
+    private int totalMatches;
 
     @Override
     public boolean match(List<ExcelHeadKey> headKeys, TestData1 t) {
+
+        StringBuilder logStr = new StringBuilder();
 
         for (ExcelHeadKey headKey : headKeys) {
             String key = headKey.getKey();
@@ -25,16 +34,23 @@ public class DefaultKeyMatcher implements KeyMatcher {
                 Field field = t.getClass().getDeclaredField(key);
                 field.setAccessible(true);
                 Object o = field.get(t);
-                if(!value.equals(o)){
+                if (!value.equals(o)) {
                     return false;
                 }
             } catch (NoSuchFieldException | IllegalAccessException e) {
                 e.printStackTrace();
                 return false;
             }
-
-
+            logStr.append(key + ":" + value).append(" ");
         }
+        logger.info("数据匹配：" + logStr);
+        totalMatches++;
         return true;
+    }
+
+
+    @Override
+    public int getTotalMatches() {
+        return totalMatches;
     }
 }

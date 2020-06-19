@@ -19,5 +19,9 @@ import java.util.List;
  */
 public interface KeyMatcher {
 
+
     boolean match(List<ExcelHeadKey> headKeys, TestData1 t);
+
+
+    int getTotalMatches();
 }

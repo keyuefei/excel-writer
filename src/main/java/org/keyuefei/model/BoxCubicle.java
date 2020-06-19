@@ -88,7 +88,7 @@ public class BoxCubicle {
     private String expressBoxInDoorSubRightFigure;
 
     @ExcelHeadAnnotation(index = 14, parentIndex = 8, text = "无花纹", desc = "智能柜I室外主柜无花纹")
-    @ExcelHeadKeyAnnotation(key = "cubicleType", value = "expressSubBox")
+    @ExcelHeadKeyAnnotation(key = "cubicleType", value = "expressMainBox")
     @ExcelHeadKeyAnnotation(key = "roomRelation", value = "2")
     @ExcelHeadKeyAnnotation(key = "figureCode", value = "0")
     private String expressBoxOutDoorMainNoFigure;

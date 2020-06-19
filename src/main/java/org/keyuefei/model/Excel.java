@@ -11,7 +11,9 @@ import java.util.Map;
 @Data
 public class Excel {
     private List<ExcelHead> excelHeads;
-    private Map<Integer, List<ExcelHead>> level2ExcelHeadsMap;
+    private Map<Integer, List<ExcelHead>> horizontalLevel2ExcelHeadsMap;
+
+    private Map<Integer, List<ExcelHead>> verticalLevel2ExcelHeadsMap;
     private String sheetName;
     //水平表头总行数
     private int horizontalHeadTotalRows;
@@ -45,27 +47,6 @@ public class Excel {
 
     private int[][] content;
 
-
-    public Excel(List<ExcelHead> excelHeads, Map<Integer, List<ExcelHead>> level2ExcelHeadsMap, String sheetName,
-                 int horizontalHeadTotalRows, int horizontalHeadTotalColumns,
-                 int verticalHeadTotalRows, int verticalHeadTotalColumns,
-                 int totalRows, int totalColumns,
-                 int rowOffset, int columnOffset,
-                 List<ColumnCondition> columnConditions, KeyMatcher keyMatcher) {
-        this.excelHeads = excelHeads;
-        this.level2ExcelHeadsMap = level2ExcelHeadsMap;
-        this.sheetName = sheetName;
-        this.horizontalHeadTotalRows = horizontalHeadTotalRows;
-        this.horizontalHeadTotalColumns = horizontalHeadTotalColumns;
-        this.verticalHeadTotalRows = verticalHeadTotalRows;
-        this.verticalHeadTotalColumns = verticalHeadTotalColumns;
-        this.totalRows = totalRows;
-        this.totalColumns = totalColumns;
-        this.rowOffset = rowOffset;
-        this.columnOffset = columnOffset;
-        this.columnConditions = columnConditions;
-        this.keyMatcher = keyMatcher;
-    }
 
     public Excel() {
     }

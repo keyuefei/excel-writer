@@ -2,8 +2,10 @@ package org.keyuefei.data;
 
 import lombok.Data;
 import org.apache.commons.lang3.RandomUtils;
+import org.keyuefei.Main;
 
 import java.util.*;
+import java.util.logging.Logger;
 
 /**
  * @Description testData1
@@ -13,6 +15,9 @@ import java.util.*;
  */
 @Data
 public class TestData1 {
+
+    private static Logger logger = Logger.getLogger(TestData1.class.getName());
+
 
     private String cubicleType;
 
@@ -29,10 +34,8 @@ public class TestData1 {
 
     public static List<TestData1> buildFakeData() {
         List<TestData1> fakeData = new ArrayList<>();
-        String[] cubicleTypes = new String[]{"expressMainBox", "expressSubBox", "expressIIIColumnSubBox", "simpleVersionMainBox", "simpleVersionIIIColumnSubBox",
-                "ezExpressMainBox", "ezExpressSubBox", "depositFiveMainBox", "depositFiveSubBox", "mergeMainBox", "mergeSubBox",
-                "letterMainBox", "letterSubBox", "exLetterMainBox", "exLetterSubBox"};
-        String[] supplierNames = new String[]{"柏顺星", "登丰", "东城", "格兰达", "派宝", "鹏科", "祁飞", "盛海", "速易宝", "网盒", "新北洋", "智莱", "智能", "中浩"};
+        String[] cubicleTypes = new String[]{"expressMainBox", "expressSubBox"};
+        String[] supplierNames = new String[]{"柏顺星", "登丰", "东城", "格兰达"};
         String[] boxCityNames = new String[]{"武汉", "深圳", "北京", "上海", "天津", "河北", "山西"};
         Map<String, String> regions = new HashMap(16);
         regions.put("武汉", "华南");
@@ -44,7 +47,7 @@ public class TestData1 {
         regions.put("山西", "华北");
 
 
-        int fakeDataCount = 50;
+        int fakeDataCount = 200;
         int sum = 0;
         //随机某一列不没有数据
 /*        String displayCubicleType = cubicleTypes[RandomUtils.nextInt(0, cubicleTypes.length)];
@@ -83,7 +86,7 @@ public class TestData1 {
             sum++;
             fakeData.add(testData1);
         }
-//        log.info("总数：{}", sum);
+        logger.info("总数:" + sum);
         return fakeData;
     }
 

@@ -62,9 +62,15 @@ public class ExcelHead {
                 "text='" + text + '\'' +
                 ", index=" + index +
                 ", parentIndex=" + parentIndex +
+                ", row=" + row +
+                ", col=" + col +
                 ", colSpan=" + colSpan +
                 ", rowSpan=" + rowSpan +
                 ", parentHead=" + parentHead +
+                ", rowGroupData=" + rowGroupData +
+                ", isHorizontalLeaf=" + isHorizontalLeaf +
+                ", headKeys=" + headKeys +
+                ", excelHeadGroup=" + excelHeadGroup +
                 '}';
     }
 }

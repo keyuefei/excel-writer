@@ -24,7 +24,7 @@ public class MyTest {
         List<TestData1> data = TestData1.buildFakeData();
         //2.
         Map<Integer, List<ExcelHead>> levelExcelHeads = new HashMap<>();
-        Main.group(levelExcelHeads, data, new String[]{""}, 0);
+        Main.group2Horizontal(levelExcelHeads, data, null, 0);
         System.out.println(levelExcelHeads);
     }
 
@@ -34,7 +34,7 @@ public class MyTest {
         List<TestData1> data = TestData1.buildFakeData();
         //2.
         Map<Integer, List<ExcelHead>> levelExcelHeads = new HashMap<>();
-        Main.group(levelExcelHeads, data, new String[]{}, 0);
+        Main.group2Horizontal(levelExcelHeads, data, null, 0);
         System.out.println(levelExcelHeads);
     }
 
@@ -45,7 +45,7 @@ public class MyTest {
         List<TestData1> data = TestData1.buildFakeData();
         //2.
         Map<Integer, List<ExcelHead>> levelExcelHeads = new HashMap<>();
-        Main.group(levelExcelHeads, data, new String[]{"region","boxCityName", "supplierName"}, 0);
+        Main.group2Horizontal(levelExcelHeads, data, null, 0);
         System.out.println(levelExcelHeads);
     }
 
