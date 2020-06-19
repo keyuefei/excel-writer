@@ -17,10 +17,10 @@ import java.util.List;
  * @DATE 2020/6/15
  * @TIME 10:31
  */
-public interface KeyMatcher {
+public interface KeyMatcher<T> {
 
 
-    boolean match(List<ExcelHeadKey> headKeys, TestData1 t);
+    int match(T t);
 
 
     int getTotalMatches();

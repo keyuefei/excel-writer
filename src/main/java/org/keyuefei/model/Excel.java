@@ -1,6 +1,7 @@
 package org.keyuefei.model;
 
 import lombok.Data;
+import org.keyuefei.accumulator.Accumulator;
 import org.keyuefei.condition.ColumnCondition;
 import org.keyuefei.matcher.KeyMatcher;
 
@@ -44,6 +45,9 @@ public class Excel {
 
     private List<ColumnCondition> columnConditions;
     private KeyMatcher keyMatcher;
+
+    private Accumulator accumulator;
+
 
     private int[][] content;
 

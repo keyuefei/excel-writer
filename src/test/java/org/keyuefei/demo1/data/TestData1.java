@@ -1,9 +1,12 @@
-package org.keyuefei.data;
+package org.keyuefei.demo1.data;
 
 import lombok.Data;
 import org.apache.commons.lang3.RandomUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 /**
@@ -46,7 +49,7 @@ public class TestData1 {
         regions.put("山西", "华北");
 
 
-        int fakeDataCount = 10;
+        int fakeDataCount = 200;
         int sum = 0;
         //随机某一列不没有数据
 /*        String displayCubicleType = cubicleTypes[RandomUtils.nextInt(0, cubicleTypes.length)];

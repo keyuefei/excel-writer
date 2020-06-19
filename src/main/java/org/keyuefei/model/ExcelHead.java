@@ -2,7 +2,6 @@ package org.keyuefei.model;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.keyuefei.data.TestData1;
 
 import java.util.List;
 
@@ -26,9 +25,6 @@ public class ExcelHead {
     //子表头
     private List<ExcelHead> childHeads;
 
-    //横向分组 数据； 横向表头有值
-    private List<TestData1> rowGroupData;
-
     /**
      * 水平叶子节点
      */
@@ -42,7 +38,7 @@ public class ExcelHead {
 
 
     public ExcelHead(String text, int index, int parentIndex, int colSpan, int rowSpan,
-                     ExcelHead parentHead, List<ExcelHead> childHeads, List<TestData1> rowGroupData,
+                     ExcelHead parentHead, List<ExcelHead> childHeads,
                      boolean isHorizontalLeaf, List<ExcelHeadKey> headKeys) {
         this.text = text;
         this.index = index;
@@ -51,10 +47,10 @@ public class ExcelHead {
         this.rowSpan = rowSpan;
         this.parentHead = parentHead;
         this.childHeads = childHeads;
-        this.rowGroupData = rowGroupData;
         this.isHorizontalLeaf = isHorizontalLeaf;
         this.headKeys = headKeys;
     }
+
 
     @Override
     public String toString() {
@@ -67,7 +63,6 @@ public class ExcelHead {
                 ", colSpan=" + colSpan +
                 ", rowSpan=" + rowSpan +
                 ", parentHead=" + parentHead +
-                ", rowGroupData=" + rowGroupData +
                 ", isHorizontalLeaf=" + isHorizontalLeaf +
                 ", headKeys=" + headKeys +
                 ", excelHeadGroup=" + excelHeadGroup +
