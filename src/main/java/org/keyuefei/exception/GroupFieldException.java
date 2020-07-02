@@ -15,4 +15,8 @@ public class GroupFieldException extends RuntimeException{
     public GroupFieldException(String message, Throwable cause) {
         super(message, cause);
     }
+
+    public GroupFieldException(Throwable cause) {
+        super(cause);
+    }
 }
