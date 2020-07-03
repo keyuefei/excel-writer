@@ -9,11 +9,6 @@ import org.keyuefei.write.metadata.WriteSheet;
 
 import java.util.List;
 
-/**
- * Build sheet
- *
- * @author Jiaju Zhuang
- */
 public class ExcelWriterSheetBuilder  {
     private ExcelWriter excelWriter;
     /**

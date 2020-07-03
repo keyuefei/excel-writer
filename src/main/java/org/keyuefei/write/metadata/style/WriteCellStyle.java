@@ -5,11 +5,6 @@ import org.apache.poi.ss.usermodel.*;
 import org.keyuefei.write.metadata.property.FontProperty;
 import org.keyuefei.write.metadata.property.StyleProperty;
 
-/**
- * Cell style when writing
- *
- * @author Jiaju Zhuang
- */
 public class WriteCellStyle {
     /**
      * Set the data format (must be a valid format). Built in formats are defined at {@link BuiltinFormats}.

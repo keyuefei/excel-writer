@@ -8,9 +8,6 @@ import org.keyuefei.write.metadata.WriteWorkbook;
 
 import java.util.List;
 
-/**
- * @author jipengfei
- */
 public class ExcelBuilder  {
 
     private WriteContext context;

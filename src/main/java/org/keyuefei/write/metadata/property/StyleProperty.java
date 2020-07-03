@@ -5,11 +5,6 @@ import org.keyuefei.annotation.write.style.ContentStyle;
 import org.keyuefei.annotation.write.style.HeadStyle;
 import org.keyuefei.write.metadata.style.WriteFont;
 
-/**
- * Configuration from annotations
- *
- * @author Jiaju Zhuang
- */
 public class StyleProperty {
     /**
      * Set the data format (must be a valid format). Built in formats are defined at {@link BuiltinFormats}.

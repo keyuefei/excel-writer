@@ -4,11 +4,6 @@ import org.apache.poi.hssf.usermodel.HSSFPalette;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.IndexedColors;
 
-/**
- * Font when writing
- *
- * @author jipengfei
- */
 public class WriteFont {
     /**
      * The name for the font (i.e. Arial)

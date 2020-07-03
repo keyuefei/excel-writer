@@ -4,11 +4,6 @@ package org.keyuefei.write.metadata.property;
 import org.keyuefei.annotation.write.style.ContentRowHeight;
 import org.keyuefei.annotation.write.style.HeadRowHeight;
 
-/**
- * Configuration from annotations
- *
- * @author Jiaju Zhuang
- */
 public class RowHeightProperty {
     private Short height;
 

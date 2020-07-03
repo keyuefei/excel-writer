@@ -2,11 +2,6 @@ package org.keyuefei.annotation.write.style;
 
 import java.lang.annotation.*;
 
-/**
- * Merge the cells once
- *
- * @author Jiaju Zhuang
- */
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited

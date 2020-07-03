@@ -6,11 +6,6 @@ import org.keyuefei.write.metadata.BasicParameter;
 import java.util.List;
 import java.util.Locale;
 
-/**
- * Write/read holder
- *
- * @author Jiaju Zhuang
- */
 public abstract class AbstractHolder {
     private List<List<String>> head;
     private Class clazz;

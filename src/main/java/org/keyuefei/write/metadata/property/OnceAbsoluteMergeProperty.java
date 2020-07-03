@@ -3,11 +3,6 @@ package org.keyuefei.write.metadata.property;
 
 import org.keyuefei.annotation.write.style.OnceAbsoluteMerge;
 
-/**
- * Configuration from annotations
- *
- * @author Jiaju Zhuang
- */
 public class OnceAbsoluteMergeProperty {
     /**
      * First row

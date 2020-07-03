@@ -14,8 +14,9 @@ import org.keyuefei.write.accumulator.FieldAccumulator;
 public class Demo3 {
 
     public static void main(String[] args) {
+        String fileName = Demo3.class.getResource("/").getPath() + "complexHeadWrite" + System.currentTimeMillis() + ".xlsx";
         //1. 构造假数据
-        DynamicExcel.write("D:\\keyuefei\\project\\dynamic-excel\\src\\test\\java\\org\\keyuefei\\demo3\\test.xlsx", StudentScore.class)
+        DynamicExcel.write(fileName, StudentScore.class)
                 .sheet(0, "test")
                 .accumulator(new FieldAccumulator<>("score"))
                 .doWrite(TestStudentScore.buildFakeData());

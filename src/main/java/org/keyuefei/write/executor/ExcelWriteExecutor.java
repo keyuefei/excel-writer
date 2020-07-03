@@ -118,7 +118,8 @@ public class ExcelWriteExecutor {
     private void init(ExcelWriteHeadProperty headProperty, List data) {
         heads = horizontalLevel(headProperty.getHeads());
         accumulator = writeContext.writeSheetHolder().getAccumulator();
-        initKeyMatcher();
+        keyMatcher = initKeyMatcher();
+
         List groups = headProperty.getGroups();
         if (groups == null || groups.size() == 0) {
             return;
@@ -132,17 +133,12 @@ public class ExcelWriteExecutor {
         group2Vertical(contentHeads, contents, data, groups, 0, headProperty.getHeadRowNumber());
     }
 
-    private void initKeyMatcher() {
+    private KeyMatcher initKeyMatcher() {
         ExcelWriteHeadProperty headProperty = writeContext.writeSheetHolder().getExcelWriteHeadProperty();
-        //leaves
-        List<ExcelHead> excelHeads = heads.get(headProperty.getHeadRowNumber() - 1);
 
         //todo
         List<List<ExcelMatchKey>> matchKeys = headProperty.getMatchKeys();
-
-        if (excelHeads == null || excelHeads.size() == 0) {
-            throw new RuntimeException("匹配器初始化异常， keys为空");
-        }
+        int groupSize = headProperty.getGroups().size();
 
         Map<List<String>, Integer> keys2colIndexMap = new HashMap(16);
         //需要保证顺序
@@ -157,10 +153,10 @@ public class ExcelWriteExecutor {
                 keys.add(match.getKey());
                 tmpKeys.add(match.getKey() + SEPARATOR + match.getValue());
             }
-            keys2colIndexMap.put(tmpKeys, colIndex);
+            keys2colIndexMap.put(tmpKeys, colIndex + groupSize);
         }
 
-        keyMatcher = new DefaultKeyMatcher(keys2colIndexMap, keys);
+        return new DefaultKeyMatcher(keys2colIndexMap, keys);
     }
 
 

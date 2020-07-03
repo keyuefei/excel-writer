@@ -7,11 +7,6 @@ import org.apache.poi.ss.usermodel.IndexedColors;
 
 import java.lang.annotation.*;
 
-/**
- * Custom content styles.
- *
- * @author Jiaju Zhuang
- */
 @Target({ElementType.FIELD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited

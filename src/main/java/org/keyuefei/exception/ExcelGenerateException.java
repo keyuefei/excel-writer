@@ -1,8 +1,5 @@
 package org.keyuefei.exception;
 
-/**
- * @author jipengfei
- */
 public class ExcelGenerateException extends RuntimeException {
 
     public ExcelGenerateException(String message) {

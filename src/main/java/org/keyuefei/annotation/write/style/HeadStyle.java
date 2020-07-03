@@ -4,11 +4,6 @@ import org.apache.poi.ss.usermodel.*;
 
 import java.lang.annotation.*;
 
-/**
- * Custom header styles
- *
- * @author Jiaju Zhuang
- */
 @Target({ElementType.FIELD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited

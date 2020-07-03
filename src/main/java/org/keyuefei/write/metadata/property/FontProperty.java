@@ -6,11 +6,6 @@ import org.apache.poi.ss.usermodel.IndexedColors;
 import org.keyuefei.annotation.write.style.ContentFontStyle;
 import org.keyuefei.annotation.write.style.HeadFontStyle;
 
-/**
- * Configuration from annotations
- *
- * @author Jiaju Zhuang
- */
 public class FontProperty {
     /**
      * The name for the font (i.e. Arial)

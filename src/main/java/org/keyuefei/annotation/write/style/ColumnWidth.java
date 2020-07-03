@@ -2,11 +2,6 @@ package org.keyuefei.annotation.write.style;
 
 import java.lang.annotation.*;
 
-/**
- * Set the width of the table
- *
- * @author Jiaju Zhuang
- */
 @Target({ElementType.FIELD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
