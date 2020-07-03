@@ -1,7 +1,5 @@
 package org.keyuefei.write.metadata.head;
 
-import java.util.Objects;
-
 public class ExcelMatchKey {
     public ExcelMatchKey(String key, String value) {
         this.key = key;

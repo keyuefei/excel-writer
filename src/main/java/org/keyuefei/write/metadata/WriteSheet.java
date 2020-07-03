@@ -1,8 +1,6 @@
 package org.keyuefei.write.metadata;
 
 
-import org.keyuefei.write.accumulator.Accumulator;
-
 public class WriteSheet extends WriteBasicParameter {
 
     private Integer sheetNo;
