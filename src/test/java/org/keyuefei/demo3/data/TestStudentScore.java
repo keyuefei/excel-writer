@@ -2,6 +2,7 @@ package org.keyuefei.demo3.data;
 
 import org.apache.commons.lang3.RandomUtils;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,7 +28,6 @@ public class TestStudentScore {
 
     private String studentName;
 
-
     //年份
     private String year;
 
@@ -36,6 +36,7 @@ public class TestStudentScore {
 
     //课程
     private String course;
+
 
     private Double score;
 
@@ -78,6 +79,7 @@ public class TestStudentScore {
         }*/
 //        String displayRoomRelation = RandomUtils.nextInt(2) + "";
 //        log.info("不展示的列{}，{}，{}", displayCubicleType, displayRoomRelation, displayFigureCode);
+        DecimalFormat df = new DecimalFormat("0.00");
         for (int i = 0; i < fakeDataCount; i++) {
             String school = schools[RandomUtils.nextInt(0, schools.length)];
             String grade = grades[RandomUtils.nextInt(0, grades.length)];
@@ -99,7 +101,7 @@ public class TestStudentScore {
 
             studentScore.setYear(year);
             studentScore.setSemester(semester);
-            studentScore.setScore(RandomUtils.nextDouble(50.0, 100.0));
+            studentScore.setScore(Double.valueOf(df.format(RandomUtils.nextDouble(50.0, 100.0))));
 
 
 

@@ -5,7 +5,7 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.keyuefei.support.ExcelTypeEnum;
+import org.keyuefei.enums.ExcelTypeEnum;
 import org.keyuefei.write.metadata.head.ExcelHead;
 import org.keyuefei.write.metadata.holder.WriteWorkbookHolder;
 

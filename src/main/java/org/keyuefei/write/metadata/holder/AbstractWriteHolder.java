@@ -2,11 +2,15 @@ package org.keyuefei.write.metadata.holder;
 
 import org.keyuefei.write.accumulator.Accumulator;
 import org.keyuefei.write.accumulator.DefaultAccumulator;
+import org.keyuefei.write.converters.Converter;
+import org.keyuefei.write.converters.ConverterKeyBuild;
+import org.keyuefei.write.converters.DefaultConverterLoader;
 import org.keyuefei.write.metadata.WriteBasicParameter;
 
 import java.util.Collection;
+import java.util.HashMap;
 
-public abstract class AbstractWriteHolder {
+public abstract class AbstractWriteHolder extends AbstractHolder implements WriteHolder {
     /**
      * Need Head
      */
@@ -34,17 +38,11 @@ public abstract class AbstractWriteHolder {
     /**
      * 累加器
      */
-    Accumulator accumulator;
+    private Accumulator accumulator;
 
-    private Class clazz;
 
     public AbstractWriteHolder(WriteBasicParameter writeBasicParameter, AbstractWriteHolder parentAbstractWriteHolder) {
-
-        if (writeBasicParameter.getHead() == null && writeBasicParameter.getClazz() == null && parentAbstractWriteHolder != null) {
-            this.clazz = parentAbstractWriteHolder.getClazz();
-        } else {
-            this.clazz = writeBasicParameter.getClazz();
-        }
+        super(writeBasicParameter, parentAbstractWriteHolder);
 
         if (writeBasicParameter.getRelativeHeadRowIndex() == null) {
             if (parentAbstractWriteHolder == null) {
@@ -88,9 +86,22 @@ public abstract class AbstractWriteHolder {
         } else {
             this.accumulator = writeBasicParameter.getAccumulator();
         }
+
+        // Set converterMap
+        if (parentAbstractWriteHolder == null) {
+            setConverterMap(DefaultConverterLoader.loadDefaultWriteConverter());
+        } else {
+            setConverterMap(new HashMap<>(parentAbstractWriteHolder.getConverterMap()));
+        }
+        if (writeBasicParameter.getCustomConverterList() != null
+                && !writeBasicParameter.getCustomConverterList().isEmpty()) {
+            for (Converter converter : writeBasicParameter.getCustomConverterList()) {
+                getConverterMap().put(ConverterKeyBuild.buildKey(converter.supportJavaTypeKey()), converter);
+            }
+        }
     }
 
-
+    @Override
     public boolean ignore(String fieldName) {
         if (fieldName != null) {
             if (includeColumnFiledNames != null && !includeColumnFiledNames.contains(fieldName)) {
@@ -103,6 +114,10 @@ public abstract class AbstractWriteHolder {
         return false;
     }
 
+    @Override
+    public int relativeHeadRowIndex() {
+        return getRelativeHeadRowIndex();
+    }
 
     public Boolean getNeedHead() {
         return needHead;
@@ -153,13 +168,6 @@ public abstract class AbstractWriteHolder {
         this.includeColumnFiledNames = includeColumnFiledNames;
     }
 
-    public Class getClazz() {
-        return clazz;
-    }
-
-    public void setClazz(Class clazz) {
-        this.clazz = clazz;
-    }
 
     public Accumulator getAccumulator() {
         return accumulator;
@@ -168,4 +176,5 @@ public abstract class AbstractWriteHolder {
     public void setAccumulator(Accumulator accumulator) {
         this.accumulator = accumulator;
     }
+
 }

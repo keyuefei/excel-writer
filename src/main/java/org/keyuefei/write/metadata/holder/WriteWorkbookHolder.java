@@ -1,10 +1,8 @@
 package org.keyuefei.write.metadata.holder;
 
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.keyuefei.exception.ExcelGenerateException;
-import org.keyuefei.support.ExcelTypeEnum;
+import org.keyuefei.enums.ExcelTypeEnum;
 import org.keyuefei.write.metadata.WriteWorkbook;
 
 import java.io.*;

@@ -1,7 +1,7 @@
 package org.keyuefei.write.metadata;
 
 
-import lombok.Data;
+import org.keyuefei.write.converters.Converter;
 
 import java.util.List;
 
@@ -10,6 +10,12 @@ public class BasicParameter {
 
 
     private Class clazz;
+
+    /**
+     * Custom type conversions override the default
+     */
+    private List<Converter> customConverterList;
+
 
     public List<List<String>> getHead() {
         return head;
@@ -25,5 +31,13 @@ public class BasicParameter {
 
     public void setClazz(Class clazz) {
         this.clazz = clazz;
+    }
+
+    public List<Converter> getCustomConverterList() {
+        return customConverterList;
+    }
+
+    public void setCustomConverterList(List<Converter> customConverterList) {
+        this.customConverterList = customConverterList;
     }
 }

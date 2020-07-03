@@ -2,6 +2,7 @@ package org.keyuefei.write.builder;
 
 import org.keyuefei.exception.ExcelGenerateException;
 import org.keyuefei.write.context.WriteContext;
+import org.keyuefei.write.executor.ExcelWriteAddExecutor;
 import org.keyuefei.write.executor.ExcelWriteExecutor;
 import org.keyuefei.write.metadata.WriteSheet;
 import org.keyuefei.write.metadata.WriteWorkbook;
@@ -12,7 +13,7 @@ public class ExcelBuilder  {
 
     private WriteContext context;
 
-    private ExcelWriteExecutor excelWriteExecutor;
+    private ExcelWriteAddExecutor excelWriteExecutor;
 
 
     public ExcelBuilder(WriteWorkbook writeWorkbook) {
@@ -31,7 +32,7 @@ public class ExcelBuilder  {
         try {
             context.currentSheet(writeSheet);
             if (excelWriteExecutor == null) {
-                excelWriteExecutor = new ExcelWriteExecutor(context);
+                excelWriteExecutor = new ExcelWriteAddExecutor(context);
             }
             excelWriteExecutor.add(data);
         } catch (RuntimeException e) {

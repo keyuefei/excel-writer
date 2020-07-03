@@ -1,8 +1,7 @@
 package org.keyuefei.write.metadata;
 
 
-import lombok.Data;
-import org.keyuefei.support.ExcelTypeEnum;
+import org.keyuefei.enums.ExcelTypeEnum;
 
 import java.io.File;
 import java.io.OutputStream;
