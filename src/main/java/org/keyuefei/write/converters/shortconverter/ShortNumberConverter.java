@@ -3,14 +3,11 @@ package org.keyuefei.write.converters.shortconverter;
 
 import org.keyuefei.write.converters.Converter;
 import org.keyuefei.write.metadata.head.CellData;
+import org.keyuefei.write.metadata.property.ExcelContentProperty;
+import org.keyuefei.write.util.NumberUtils;
 
 import java.math.BigDecimal;
 
-/**
- * Short and number converter
- *
- * @author Jiaju Zhuang
- */
 public class ShortNumberConverter implements Converter<Short> {
 
     @Override
@@ -20,8 +17,8 @@ public class ShortNumberConverter implements Converter<Short> {
 
 
     @Override
-    public CellData convertToExcelData(Short value) {
-        return new CellData(new BigDecimal(Short.toString(value)));
+    public CellData convertToExcelData(Short value, ExcelContentProperty excelContentProperty) {
+        return NumberUtils.formatToCellData(value, excelContentProperty);
     }
 
 }

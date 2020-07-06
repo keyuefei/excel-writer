@@ -8,6 +8,7 @@ import org.keyuefei.write.converters.Converter;
 import org.keyuefei.write.converters.ConverterKeyBuild;
 import org.keyuefei.write.metadata.head.CellData;
 import org.keyuefei.write.metadata.holder.WriteHolder;
+import org.keyuefei.write.metadata.property.ExcelContentProperty;
 
 public abstract class AbstractExcelWriteExecutor implements ExcelWriteExecutor {
 
@@ -17,14 +18,14 @@ public abstract class AbstractExcelWriteExecutor implements ExcelWriteExecutor {
         this.writeContext = writeContext;
     }
 
-    protected CellData converterAndSet(WriteHolder writeHolder, Class clazz, Cell cell, Object value) {
+    protected CellData converterAndSet(WriteHolder writeHolder, ExcelContentProperty excelContentProperty, Class clazz, Cell cell, Object value) {
         if (value == null) {
             return new CellData(CellDataTypeEnum.EMPTY);
         }
         if (value instanceof String) {
             value = ((String) value).trim();
         }
-        CellData cellData = convert(writeHolder, clazz, cell, value);
+        CellData cellData = convert(writeHolder, excelContentProperty, clazz, cell, value);
         if (cellData.getFormula() != null && cellData.getFormula()) {
             cell.setCellFormula(cellData.getFormulaValue());
         }
@@ -51,7 +52,7 @@ public abstract class AbstractExcelWriteExecutor implements ExcelWriteExecutor {
         }
     }
 
-    protected CellData convert(WriteHolder currentWriteHolder, Class clazz, Cell cell, Object value) {
+    protected CellData convert(WriteHolder currentWriteHolder, ExcelContentProperty excelContentProperty, Class clazz, Cell cell, Object value) {
         if (value == null) {
             return new CellData(CellDataTypeEnum.EMPTY);
         }
@@ -66,7 +67,7 @@ public abstract class AbstractExcelWriteExecutor implements ExcelWriteExecutor {
                     return cellDataValue;
                 }
             }
-            CellData cellDataReturn = doConvert(currentWriteHolder, cellDataValue.getData().getClass(), cell, cellDataValue.getData());
+            CellData cellDataReturn = doConvert(currentWriteHolder, excelContentProperty, cellDataValue.getData().getClass(), cell, cellDataValue.getData());
             // The formula information is subject to user input
             if (cellDataValue.getFormula() != null) {
                 cellDataReturn.setFormula(cellDataValue.getFormula());
@@ -74,11 +75,15 @@ public abstract class AbstractExcelWriteExecutor implements ExcelWriteExecutor {
             }
             return cellDataReturn;
         }
-        return doConvert(currentWriteHolder, clazz, cell, value);
+        return doConvert(currentWriteHolder, excelContentProperty, clazz, cell, value);
     }
 
-    private CellData doConvert(WriteHolder currentWriteHolder, Class clazz, Cell cell, Object value) {
+    private CellData doConvert(WriteHolder currentWriteHolder, ExcelContentProperty excelContentProperty, Class clazz, Cell cell, Object value) {
         Converter converter = null;
+
+        if (excelContentProperty != null) {
+            converter = excelContentProperty.getConverter();
+        }
 
         if (converter == null) {
             converter = currentWriteHolder.converterMap().get(ConverterKeyBuild.buildKey(clazz));
@@ -89,8 +94,7 @@ public abstract class AbstractExcelWriteExecutor implements ExcelWriteExecutor {
         }
         CellData cellData;
         try {
-            cellData =
-                    converter.convertToExcelData(value);
+            cellData = converter.convertToExcelData(value, excelContentProperty);
         } catch (Exception e) {
             throw new ExcelDataConvertException(cell.getRow().getRowNum(), cell.getColumnIndex(),
                     new CellData(CellDataTypeEnum.EMPTY), "Convert data:" + value + " error,at row:" + cell.getRow().getRowNum(), e);

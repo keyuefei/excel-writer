@@ -2,6 +2,9 @@ package org.keyuefei.annotation;
 
 
 
+import org.keyuefei.write.converters.AutoConverter;
+import org.keyuefei.write.converters.Converter;
+
 import java.lang.annotation.*;
 
 /**
@@ -43,5 +46,12 @@ public @interface ExcelProperty {
      * @return Order of column
      */
     int order() default Integer.MAX_VALUE;
+
+    /**
+     * Force the current field to use this converter.
+     *
+     * @return Converter
+     */
+    Class<? extends Converter> converter() default AutoConverter.class;
 
 }

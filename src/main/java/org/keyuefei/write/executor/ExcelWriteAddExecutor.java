@@ -10,6 +10,7 @@ import org.keyuefei.write.matcher.KeyMatcher;
 import org.keyuefei.write.metadata.head.ExcelHead;
 import org.keyuefei.write.metadata.head.ExcelHeadGroup;
 import org.keyuefei.write.metadata.head.ExcelMatchKey;
+import org.keyuefei.write.metadata.property.ExcelContentProperty;
 import org.keyuefei.write.metadata.property.ExcelWriteHeadProperty;
 import org.keyuefei.write.util.WorkBookUtil;
 import org.slf4j.Logger;
@@ -92,16 +93,17 @@ public class ExcelWriteAddExecutor extends AbstractExcelWriteExecutor {
 
     private void addContent(Object content, Row row) {
         boolean needGroup = writeContext.writeSheetHolder().getExcelWriteHeadProperty().isNeedGroup();
-        if(needGroup && content instanceof  List){
+        if (needGroup && content instanceof List) {
             addGroupContent((List) content, row);
-        }else{
+        } else {
             addNormalContent(content, row);
         }
     }
 
     private void addNormalContent(Object content, Row row) {
         //todo 待提升效率
-        Map<Integer, Field> sortedFiledMap =  writeContext.writeSheetHolder().getExcelWriteHeadProperty().getSortedAllFiledMap();
+        Map<Integer, Field> sortedFiledMap = writeContext.writeSheetHolder().getExcelWriteHeadProperty().getSortedAllFiledMap();
+        Map<Integer, ExcelContentProperty> contentPropertyMap = writeContext.writeSheetHolder().getExcelWriteHeadProperty().getContentPropertyMap();
         for (Map.Entry<Integer, Field> filedEntry : sortedFiledMap.entrySet()) {
             Field field = filedEntry.getValue();
             int colIndex = filedEntry.getKey();
@@ -112,7 +114,7 @@ public class ExcelWriteAddExecutor extends AbstractExcelWriteExecutor {
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
-            doAddBasicTypeToExcel(value, row, colIndex);
+            doAddBasicTypeToExcel(value, row, contentPropertyMap.get(colIndex), colIndex);
         }
     }
 
@@ -134,13 +136,13 @@ public class ExcelWriteAddExecutor extends AbstractExcelWriteExecutor {
         for (Map.Entry<Integer, Object> entry : col2content.entrySet()) {
             int colIndex = entry.getKey();
             Object value = entry.getValue();
-            doAddBasicTypeToExcel(value, row, colIndex);
+            doAddBasicTypeToExcel(value, row, null, colIndex);
         }
     }
 
-    private void doAddBasicTypeToExcel(Object value, Row row, int colIndex) {
+    private void doAddBasicTypeToExcel(Object value, Row row, ExcelContentProperty excelContentProperty, int colIndex) {
         Cell cell = WorkBookUtil.createCell(row, colIndex);
-        converterAndSet(writeContext.currentWriteHolder(), value.getClass(), cell, value);
+        converterAndSet(writeContext.currentWriteHolder(), excelContentProperty, value.getClass(), cell, value);
     }
 
     private boolean initDataClass(List data) {

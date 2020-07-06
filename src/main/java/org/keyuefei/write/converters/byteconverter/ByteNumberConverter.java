@@ -3,6 +3,7 @@ package org.keyuefei.write.converters.byteconverter;
 
 import org.keyuefei.write.converters.Converter;
 import org.keyuefei.write.metadata.head.CellData;
+import org.keyuefei.write.metadata.property.ExcelContentProperty;
 
 import java.math.BigDecimal;
 
@@ -20,7 +21,7 @@ public class ByteNumberConverter implements Converter<Byte> {
 
 
     @Override
-    public CellData convertToExcelData(Byte value) {
+    public CellData convertToExcelData(Byte value, ExcelContentProperty excelContentProperty) {
         return new CellData(new BigDecimal(Byte.toString(value)));
     }
 

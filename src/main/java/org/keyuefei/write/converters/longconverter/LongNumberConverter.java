@@ -3,14 +3,11 @@ package org.keyuefei.write.converters.longconverter;
 
 import org.keyuefei.write.converters.Converter;
 import org.keyuefei.write.metadata.head.CellData;
+import org.keyuefei.write.metadata.property.ExcelContentProperty;
+import org.keyuefei.write.util.NumberUtils;
 
 import java.math.BigDecimal;
 
-/**
- * Long and number converter
- *
- * @author Jiaju Zhuang
- */
 public class LongNumberConverter implements Converter<Long> {
 
     @Override
@@ -19,8 +16,8 @@ public class LongNumberConverter implements Converter<Long> {
     }
 
     @Override
-    public CellData convertToExcelData(Long value) {
-        return new CellData(BigDecimal.valueOf(value));
+    public CellData convertToExcelData(Long value, ExcelContentProperty excelContentProperty) {
+        return NumberUtils.formatToCellData(value, excelContentProperty);
     }
 
 }

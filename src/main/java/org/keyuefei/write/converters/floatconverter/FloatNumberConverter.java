@@ -3,14 +3,11 @@ package org.keyuefei.write.converters.floatconverter;
 
 import org.keyuefei.write.converters.Converter;
 import org.keyuefei.write.metadata.head.CellData;
+import org.keyuefei.write.metadata.property.ExcelContentProperty;
+import org.keyuefei.write.util.NumberUtils;
 
 import java.math.BigDecimal;
 
-/**
- * Float and number converter
- *
- * @author Jiaju Zhuang
- */
 public class FloatNumberConverter implements Converter<Float> {
 
     @Override
@@ -20,8 +17,8 @@ public class FloatNumberConverter implements Converter<Float> {
 
 
     @Override
-    public CellData convertToExcelData(Float value) {
-        return new CellData(new BigDecimal(Float.toString(value)));
+    public CellData convertToExcelData(Float value, ExcelContentProperty excelContentProperty) {
+        return NumberUtils.formatToCellData(value, excelContentProperty);
     }
 
 }

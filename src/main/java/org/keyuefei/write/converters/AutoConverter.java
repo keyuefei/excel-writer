@@ -2,6 +2,7 @@ package org.keyuefei.write.converters;
 
 
 import org.keyuefei.write.metadata.head.CellData;
+import org.keyuefei.write.metadata.property.ExcelContentProperty;
 
 public class AutoConverter implements Converter {
 
@@ -12,7 +13,7 @@ public class AutoConverter implements Converter {
 
 
     @Override
-    public CellData convertToExcelData(Object value) {
+    public CellData convertToExcelData(Object value, ExcelContentProperty excelContentProperty) {
         return null;
     }
 }

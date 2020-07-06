@@ -2,6 +2,8 @@ package org.keyuefei.write.converters.doubleconverter;
 
 import org.keyuefei.write.converters.Converter;
 import org.keyuefei.write.metadata.head.CellData;
+import org.keyuefei.write.metadata.property.ExcelContentProperty;
+import org.keyuefei.write.util.NumberUtils;
 
 import java.math.BigDecimal;
 
@@ -14,8 +16,8 @@ public class DoubleNumberConverter implements Converter<Double> {
 
 
     @Override
-    public CellData convertToExcelData(Double value) {
-        return new CellData(BigDecimal.valueOf(value));
+    public CellData convertToExcelData(Double value, ExcelContentProperty excelContentProperty) {
+        return NumberUtils.formatToCellData(value, excelContentProperty);
     }
 
 }

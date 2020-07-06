@@ -4,7 +4,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.keyuefei.annotation.ExcelGroup;
 import org.keyuefei.annotation.ExcelMatch;
 import org.keyuefei.annotation.ExcelProperty;
+import org.keyuefei.annotation.format.DateTimeFormat;
+import org.keyuefei.annotation.format.NumberFormat;
 import org.keyuefei.exception.ExcelCommonException;
+import org.keyuefei.write.converters.AutoConverter;
+import org.keyuefei.write.converters.Converter;
 import org.keyuefei.write.metadata.head.ExcelHead;
 import org.keyuefei.write.metadata.head.ExcelHeadGroup;
 import org.keyuefei.write.metadata.head.ExcelMatchKey;
@@ -28,12 +32,13 @@ public class ExcelHeadProperty {
     private List<ExcelHeadGroup> groups;
     private List<List<ExcelMatchKey>> matchKeys;
 
-
     private Map<Integer, Field> sortedAllFiledMap;
+    private Map<Integer, ExcelContentProperty> contentPropertyMap;
 
     public ExcelHeadProperty(AbstractWriteHolder holder, Class headClazz) {
         this.headClazz = headClazz;
-        sortedAllFiledMap = new HashMap<>(16);
+        sortedAllFiledMap = new TreeMap<Integer, Field>();
+        contentPropertyMap = new TreeMap<Integer, ExcelContentProperty>();
         headRowNumber = 0;
         heads = initExcelHeads(holder);
     }
@@ -56,13 +61,6 @@ public class ExcelHeadProperty {
         return initHeadProperty(initHeads());
     }
 
-    public List<List<ExcelMatchKey>> getMatchKeys() {
-        return matchKeys;
-    }
-
-    public void setMatchKeys(List<List<ExcelMatchKey>> matchKeys) {
-        this.matchKeys = matchKeys;
-    }
 
 
     private List initHeads() {
@@ -75,6 +73,7 @@ public class ExcelHeadProperty {
         Set<String> matchKeysRule = new HashSet<>(), tmpMatchKeysRule = new HashSet<>();
         for (Map.Entry<Integer, Field> entry : sortedAllFiledMap.entrySet()) {
             Field field = entry.getValue();
+            int index = entry.getKey();
             ExcelProperty excelProperty = field.getAnnotation(ExcelProperty.class);
             boolean notForceName = excelProperty == null || excelProperty.value().length <= 0
                     || (excelProperty.value().length == 1 && StringUtils.isEmpty((excelProperty.value())[0]));
@@ -86,6 +85,27 @@ public class ExcelHeadProperty {
             }
 
             headNames.add(tmpHeadNames);
+
+            ExcelContentProperty excelContentProperty = new ExcelContentProperty();
+            if (excelProperty != null) {
+                Class<? extends Converter> convertClazz = excelProperty.converter();
+                if (convertClazz != AutoConverter.class) {
+                    try {
+                        Converter converter = convertClazz.newInstance();
+                        excelContentProperty.setConverter(converter);
+                    } catch (Exception e) {
+                        throw new ExcelCommonException("Can not instance custom converter:" + convertClazz.getName());
+                    }
+                }
+            }
+
+            excelContentProperty.setField(field);
+            excelContentProperty
+                    .setDateTimeFormatProperty(DateTimeFormatProperty.build(field.getAnnotation(DateTimeFormat.class)));
+            excelContentProperty
+                    .setNumberFormatProperty(NumberFormatProperty.build(field.getAnnotation(NumberFormat.class)));
+            contentPropertyMap.put(index, excelContentProperty);
+
 
             ExcelGroup excelGroup = field.getAnnotation(ExcelGroup.class);
             if (excelGroup != null) {
@@ -326,11 +346,27 @@ public class ExcelHeadProperty {
         this.groups = groups;
     }
 
+    public List<List<ExcelMatchKey>> getMatchKeys() {
+        return matchKeys;
+    }
+
+    public void setMatchKeys(List<List<ExcelMatchKey>> matchKeys) {
+        this.matchKeys = matchKeys;
+    }
+
     public boolean isNeedGroup() {
         return needGroup;
     }
 
     public void setNeedGroup(boolean needGroup) {
         this.needGroup = needGroup;
+    }
+
+    public Map<Integer, ExcelContentProperty> getContentPropertyMap() {
+        return contentPropertyMap;
+    }
+
+    public void setContentPropertyMap(Map<Integer, ExcelContentProperty> contentPropertyMap) {
+        this.contentPropertyMap = contentPropertyMap;
     }
 }
