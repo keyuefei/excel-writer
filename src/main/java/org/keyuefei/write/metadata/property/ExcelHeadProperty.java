@@ -23,6 +23,7 @@ public class ExcelHeadProperty {
 
     private Class headClazz;
     private int headRowNumber;
+    private boolean needGroup;
     private List<ExcelHead> heads;
     private List<ExcelHeadGroup> groups;
     private List<List<ExcelMatchKey>> matchKeys;
@@ -63,16 +64,6 @@ public class ExcelHeadProperty {
         this.matchKeys = matchKeys;
     }
 
-
-    class Head {
-        List<String> names;
-        Field field;
-
-        public Head(List<String> names, Field field) {
-            this.names = names;
-            this.field = field;
-        }
-    }
 
     private List initHeads() {
         List<List<String>> headNames = new ArrayList<>();
@@ -142,7 +133,12 @@ public class ExcelHeadProperty {
             sortedGroup.deleteCharAt(sortedGroup.lastIndexOf("、")).append("】");
             LOGGER.debug("分组顺序：{}", sortedGroup);
         }
-        this.groups = groups;
+        if (groups.size() == 0) {
+            this.needGroup = false;
+        } else {
+            this.needGroup = true;
+            this.groups = groups;
+        }
         this.matchKeys = matchKeys;
         return headNames;
     }
@@ -328,5 +324,13 @@ public class ExcelHeadProperty {
 
     public void setGroups(List<ExcelHeadGroup> groups) {
         this.groups = groups;
+    }
+
+    public boolean isNeedGroup() {
+        return needGroup;
+    }
+
+    public void setNeedGroup(boolean needGroup) {
+        this.needGroup = needGroup;
     }
 }

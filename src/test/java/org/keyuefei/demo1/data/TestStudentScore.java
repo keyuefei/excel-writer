@@ -1,13 +1,14 @@
-package org.keyuefei.demo3.data;
+package org.keyuefei.demo1.data;
 
 import org.apache.commons.lang3.RandomUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 /**
  * @Description testData1
@@ -17,7 +18,8 @@ import java.util.logging.Logger;
  */
 public class TestStudentScore {
 
-    private static Logger logger = Logger.getLogger(TestStudentScore.class.getName());
+
+    private static Logger logger = LoggerFactory.getLogger(TestStudentScore.class);
 
 
     private String school;

@@ -1,4 +1,4 @@
-package org.keyuefei.demo3.annotation;
+package org.keyuefei.demo1.annotation;
 
 
 import org.keyuefei.annotation.ExcelGroup;
@@ -15,10 +15,6 @@ import java.math.BigDecimal;
  * @Time 16:59
  */
 public class StudentScore {
-
-    @ExcelGroup(key = "school")
-    @ExcelProperty(value = "学校")
-    private String school;
 
     @ExcelGroup(key = "grade")
     @ExcelProperty(value = "年级")

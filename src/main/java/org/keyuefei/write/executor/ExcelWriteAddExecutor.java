@@ -21,7 +21,7 @@ import java.util.*;
 import static org.keyuefei.write.constant.Constant.SEPARATOR;
 
 
-public class ExcelWriteAddExecutor extends AbstractExcelWriteExecutor{
+public class ExcelWriteAddExecutor extends AbstractExcelWriteExecutor {
 
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ExcelWriteAddExecutor.class);
@@ -31,7 +31,7 @@ public class ExcelWriteAddExecutor extends AbstractExcelWriteExecutor{
 
     private Map<Integer, List<ExcelHead>> contentHeads;
 
-    private Map<Integer, List> contents;
+    private Map<Integer, Object> contents;
 
     private Class contentClass;
 
@@ -48,13 +48,13 @@ public class ExcelWriteAddExecutor extends AbstractExcelWriteExecutor{
         if (!initDataClass(data)) {
             return;
         }
+        ExcelWriteHeadProperty excelWriteHeadProperty = writeContext.writeSheetHolder().getExcelWriteHeadProperty();
+        init(excelWriteHeadProperty, data);
 
-        init(writeContext.writeSheetHolder().getExcelWriteHeadProperty(), data);
-
-        add();
+        add(excelWriteHeadProperty);
     }
 
-    private void add() {
+    private void add(ExcelWriteHeadProperty excelWriteHeadProperty) {
         //head
         int headRows = heads.size();
         for (int rowIndex = 0; rowIndex < headRows; rowIndex++) {
@@ -69,22 +69,55 @@ public class ExcelWriteAddExecutor extends AbstractExcelWriteExecutor{
             }
         }
 
-        //content head
-        for (Map.Entry<Integer, List<ExcelHead>> contentHead : contentHeads.entrySet()) {
-            int rowIndex = contentHead.getKey();
-            List<ExcelHead> excelHeads = contentHead.getValue();
-            Row row = WorkBookUtil.createRow(writeContext.writeSheetHolder().getSheet(), rowIndex);
-            for (ExcelHead excelHead : excelHeads) {
-                WorkBookUtil.createCell(row, excelHead.getCol(), excelHead.getText());
-                WorkBookUtil.mergeCells(excelHead, writeContext.writeSheetHolder().getSheet());
-                addContent(contents.get(rowIndex), row);
+        if (excelWriteHeadProperty.isNeedGroup()) {
+            //content head
+            for (Map.Entry<Integer, List<ExcelHead>> contentHead : contentHeads.entrySet()) {
+                int rowIndex = contentHead.getKey();
+                List<ExcelHead> excelHeads = contentHead.getValue();
+                Row row = WorkBookUtil.createRow(writeContext.writeSheetHolder().getSheet(), rowIndex);
+                for (ExcelHead excelHead : excelHeads) {
+                    WorkBookUtil.createCell(row, excelHead.getCol(), excelHead.getText());
+                    WorkBookUtil.mergeCells(excelHead, writeContext.writeSheetHolder().getSheet());
+                    addContent(contents.get(rowIndex), row);
+                }
             }
+        } else {
+            for (Map.Entry<Integer, Object> content : contents.entrySet()) {
+                Row row = WorkBookUtil.createRow(writeContext.writeSheetHolder().getSheet(), content.getKey());
+                addContent(content.getValue(), row);
+            }
+        }
+
+    }
+
+    private void addContent(Object content, Row row) {
+        boolean needGroup = writeContext.writeSheetHolder().getExcelWriteHeadProperty().isNeedGroup();
+        if(needGroup && content instanceof  List){
+            addGroupContent((List) content, row);
+        }else{
+            addNormalContent(content, row);
         }
     }
 
-    private void addContent(List content, Row row) {
+    private void addNormalContent(Object content, Row row) {
+        //todo 待提升效率
+        Map<Integer, Field> sortedFiledMap =  writeContext.writeSheetHolder().getExcelWriteHeadProperty().getSortedAllFiledMap();
+        for (Map.Entry<Integer, Field> filedEntry : sortedFiledMap.entrySet()) {
+            Field field = filedEntry.getValue();
+            int colIndex = filedEntry.getKey();
+            field.setAccessible(true);
+            Object value = null;
+            try {
+                value = field.get(content);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+            doAddBasicTypeToExcel(value, row, colIndex);
+        }
+    }
 
-        Map<Integer, Object> col2content = new HashMap<>();
+    private void addGroupContent(List content, Row row) {
+        Map<Integer, Object> col2content = new HashMap<>(16);
         //确定数据的 colIndex
         for (Object c : content) {
             int colIndex = keyMatcher.match(c);
@@ -102,9 +135,7 @@ public class ExcelWriteAddExecutor extends AbstractExcelWriteExecutor{
             int colIndex = entry.getKey();
             Object value = entry.getValue();
             doAddBasicTypeToExcel(value, row, colIndex);
-
         }
-
     }
 
     private void doAddBasicTypeToExcel(Object value, Row row, int colIndex) {
@@ -125,17 +156,21 @@ public class ExcelWriteAddExecutor extends AbstractExcelWriteExecutor{
         accumulator = writeContext.writeSheetHolder().getAccumulator();
         keyMatcher = initKeyMatcher();
 
-        List groups = headProperty.getGroups();
-        if (groups == null || groups.size() == 0) {
-            return;
-        }
-        Map<String, Object> map = new HashMap<>();
-        //分组后的  内容表头 key: rowIndex  value: 表头
-        contentHeads = new HashMap<>(16);
-        //分组后的  数据集合 key: rowIndex  value: 数据集合
+        //数据集合 key: rowIndex  value: 数据集合
         contents = new HashMap<>(16);
-        //将数据提取出来
-        group2Vertical(contentHeads, contents, data, groups, 0, headProperty.getHeadRowNumber());
+        if (headProperty.isNeedGroup()) {
+            //分组后的  内容表头 key: rowIndex  value: 表头
+            contentHeads = new HashMap<>(16);
+            //将数据提取出来
+            group2Vertical(contentHeads, contents, data, headProperty.getGroups(), 0, headProperty.getHeadRowNumber());
+        } else {
+            //没有分组
+            for (int i = 0, rowIndex = headProperty.getHeadRowNumber(); i < data.size(); i++, rowIndex++) {
+                contents.put(rowIndex, data.get(i));
+            }
+        }
+
+
     }
 
     private KeyMatcher initKeyMatcher() {
@@ -143,7 +178,7 @@ public class ExcelWriteAddExecutor extends AbstractExcelWriteExecutor{
 
         //todo
         List<List<ExcelMatchKey>> matchKeys = headProperty.getMatchKeys();
-        int groupSize = headProperty.getGroups().size();
+        int groupSize = headProperty.isNeedGroup() ? headProperty.getGroups().size() : 0;
 
         Map<List<String>, Integer> keys2colIndexMap = new HashMap(16);
         //需要保证顺序
@@ -187,7 +222,7 @@ public class ExcelWriteAddExecutor extends AbstractExcelWriteExecutor{
     }
 
 
-    public int group2Vertical(Map<Integer, List<ExcelHead>> contentHeads, Map<Integer, List> content,
+    public int group2Vertical(Map<Integer, List<ExcelHead>> contentHeads, Map<Integer, Object> content,
                               List data, List<ExcelHeadGroup> groups, int level, int nextLevelStartRowIndex) throws GroupFieldException {
 
         if (level > groups.size() - 1) {
