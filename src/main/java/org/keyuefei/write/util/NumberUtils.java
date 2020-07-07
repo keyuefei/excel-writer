@@ -44,7 +44,7 @@ public class NumberUtils {
      * @return
      */
     public static CellData formatToCellData(Number num, ExcelContentProperty contentProperty) {
-        return new CellData(format(num, contentProperty));
+        return new CellData(new BigDecimal(format(num, contentProperty)));
     }
 
     /**

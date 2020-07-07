@@ -48,7 +48,7 @@ public abstract class AbstractExcelWriteExecutor implements ExcelWriteExecutor {
             default:
                 throw new ExcelDataConvertException(cell.getRow().getRowNum(), cell.getColumnIndex(), cellData,
                         "Not supported data:" + value + " return type:" + cell.getCellType()
-                        + "at row:" + cell.getRow().getRowNum());
+                                + "at row:" + cell.getRow().getRowNum());
         }
     }
 
